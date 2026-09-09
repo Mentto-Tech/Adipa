@@ -1,0 +1,137 @@
+.navbar {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.navbar-logo {
+  flex-shrink: 0;
+}
+
+.navbar-logo-img {
+  height: 56px;
+  width: auto;
+  object-fit: contain;
+}
+
+.navbar-nav {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+}
+
+.navbar-link {
+  font-size: 15px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s;
+  color: #222;
+  font-weight: 500;
+}
+
+.navbar-link:hover,
+.navbar-link.active {
+  color: #255753;
+}
+
+.navbar-link.active {
+  font-weight: 700;
+}
+
+.navbar-cta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #255753;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 50px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.hamburger-bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #255753;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.hamburger-bar.top.open {
+  transform: rotate(45deg) translateY(7px);
+}
+
+.hamburger-bar.mid.open {
+  opacity: 0;
+}
+
+.hamburger-bar.bot.open {
+  transform: rotate(-45deg) translateY(-7px);
+}
+
+.navbar-mobile-menu {
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.navbar-mobile-link {
+  color: #255753;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.navbar-mobile-cta {
+  color: #fff;
+  background: #255753;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .navbar-nav,
+  .navbar-cta {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}

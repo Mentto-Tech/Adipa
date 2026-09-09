@@ -1,0 +1,28 @@
+.comunicados-page {
+  background: #255753;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 32px;
+  border-bottom: 1px solid white;
+}
+
+.comunicados-title {
+  margin-top: 40px;
+  color: #fff;
+  font-size: clamp(20px, 4vw, 36px);
+  font-weight: 700;
+}
+
+.comunicados-image-wrapper {
+  width: 100%;
+  max-width: 672px;
+  margin: 40px;
+}
+
+.comunicados-image {
+  width: 100%;
+  height: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}

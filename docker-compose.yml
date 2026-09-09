@@ -18,14 +18,17 @@ services:
 
   api:
     build:
-      context: ./adipa-api
+      context: ./backend
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://adipa:adipa@db:5432/adipa_db
       UPLOAD_DIR: /uploads
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-key-change-in-production}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
     volumes:
       - uploads:/uploads
-      - ./adipa-api:/app  # hot reload em dev
+      - ./backend:/app
     ports:
       - "8000:8000"
     depends_on:
@@ -34,14 +37,36 @@ services:
 
   web:
     build:
-      context: ./adipa-site
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - api
+
+  test:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql://adipa:adipa@db:5432/adipa_db
+      UPLOAD_DIR: /tmp/uploads
+      SECRET_KEY: test-secret-key
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: adminpass
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["pytest", "--tb=short", "-v"]
+    profiles:
+      - test
 
 volumes:
   postgres_data:

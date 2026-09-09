@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "i0.wp.com" },
       { protocol: "https", hostname: "adipa.org.br" },
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "http", hostname: "localhost" },
     ],
   },
 };

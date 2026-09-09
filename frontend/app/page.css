@@ -1,0 +1,192 @@
+/* ── COMUNICADO ── */
+.section-comunicado {
+  background: #255753;
+  padding: 72px 24px;
+}
+
+.comunicado-inner {
+  max-width: 820px;
+  margin: 0 auto;
+  text-align: center;
+  color: #fff;
+}
+
+.comunicado-title {
+  font-weight: 900;
+  font-size: clamp(18px, 2.5vw, 24px);
+  margin-bottom: 24px;
+}
+
+.comunicado-text {
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.comunicado-text-bold {
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.comunicado-text-last {
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 36px;
+}
+
+.btn-comunicado {
+  display: inline-block;
+  background: #e8692a;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 14px 36px;
+  border-radius: 50px;
+  text-decoration: none;
+}
+
+/* ── HERO ── */
+.section-hero {
+  background: #fff;
+  padding: 32px 24px;
+}
+
+.hero-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hero-logo {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.hero-content {
+  flex: 1;
+  min-width: 260px;
+}
+
+.hero-text {
+  font-size: 17px;
+  color: #333;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.btn-hero {
+  display: inline-block;
+  background: #255753;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 12px 32px;
+  border-radius: 50px;
+  text-decoration: none;
+  letter-spacing: 0.08em;
+}
+
+/* ── POR QUE ADIPA ── */
+.section-why {
+  background: #255753;
+  background-image: url("/bg-field.jpg");
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: multiply;
+  padding: 80px 24px;
+}
+
+.why-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  flex-wrap: wrap;
+}
+
+.why-title {
+  color: #fff;
+  font-weight: 900;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.1;
+  min-width: 200px;
+  flex: 0 0 auto;
+}
+
+.why-content {
+  flex: 1;
+  min-width: 260px;
+}
+
+.why-text {
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 32px;
+}
+
+.btn-why {
+  display: inline-block;
+  border: 2px solid #fff;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 12px 32px;
+  border-radius: 50px;
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  background: transparent;
+}
+
+/* ── PARCEIROS ── */
+.section-partners {
+  background: #fff;
+  padding: 72px 24px;
+}
+
+.partners-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.partners-title {
+  text-align: center;
+  color: #255753;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.1em;
+  margin-bottom: 48px;
+}
+
+.partners-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.partners-row:last-child {
+  margin-bottom: 0;
+}
+
+.partner-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.partner-logo {
+  width: auto;
+  object-fit: contain;
+}

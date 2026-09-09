@@ -1,0 +1,210 @@
+/* ── HERO ── */
+.qs-hero {
+  position: relative;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.qs-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 58, 40, 0.65);
+}
+
+.qs-hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: #fff;
+}
+
+.qs-hero-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  margin: 0 auto 12px;
+}
+
+.qs-hero-name {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+/* ── MISSÃO ── */
+.qs-mission {
+  background: #fff;
+  padding: 72px 24px;
+}
+
+.qs-mission-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 56px;
+  flex-wrap: wrap;
+}
+
+.qs-mission-text {
+  flex: 1 1 340px;
+}
+
+.qs-mission-title {
+  font-size: clamp(22px, 1vw, 30px);
+  font-weight: 800;
+  color: #255753;
+  line-height: 1.3;
+  margin-bottom: 24px;
+}
+
+.qs-mission-body {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #333;
+}
+
+.qs-mission-photo {
+  flex: 1 1 340px;
+}
+
+.qs-mission-img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* ── HISTÓRIA ── */
+.qs-history {
+  background: #fff;
+}
+
+.qs-history-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.qs-history-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #255753;
+  margin-bottom: 20px;
+}
+
+.qs-history-text {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.qs-history-text:last-child {
+  margin-bottom: 4rem;
+}
+
+/* ── PROPÓSITO / VISÃO / VALORES ── */
+.qs-pvv {
+  background: #255753;
+  padding: 72px 24px;
+  position: relative;
+}
+
+.qs-pvv-grid {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  text-align: center;
+}
+
+.qs-pvv-item {
+  color: #fff;
+}
+
+.qs-pvv-icon {
+  margin-bottom: 20px;
+}
+
+.qs-pvv-icon img {
+  display: inline-block;
+}
+
+.qs-pvv-subtitle {
+  font-weight: 800;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.qs-pvv-text {
+  font-size: 14px;
+  line-height: 1.75;
+  opacity: 0.9;
+}
+
+@media (max-width: 640px) {
+  .qs-pvv-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── MEMBROS ── */
+.qs-council {
+  background: #fff;
+  padding: 72px 24px;
+}
+
+.qs-council-last {
+  background: #fff;
+  padding: 0 24px 72px;
+}
+
+.qs-council-bottom {
+  background: #fff;
+  padding: 0 24px 80px;
+}
+
+.qs-council-title {
+  text-align: center;
+  color: #255753;
+  font-weight: 900;
+  font-size: 24px;
+  letter-spacing: 0.1em;
+  margin-bottom: 48px;
+}
+
+/* ── MEMBER GRID ── */
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.member-item {
+  text-align: center;
+}
+
+.member-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #255753;
+  margin-bottom: 6px;
+}
+
+.member-role {
+  font-size: 13px;
+  color: #666;
+}
+
+@media (max-width: 640px) {
+  .member-grid {
+    grid-template-columns: 1fr;
+  }
+}

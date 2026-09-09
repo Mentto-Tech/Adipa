@@ -1,0 +1,44 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test:
+    name: Run pytest in Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build images
+        run: docker compose build db test
+
+      - name: Start database
+        run: docker compose up -d db
+
+      - name: Wait for Postgres to be healthy
+        run: |
+          echo "Aguardando Postgres..."
+          for i in $(seq 1 30); do
+            docker compose ps db | grep "healthy" && break
+            sleep 2
+          done
+
+      - name: Run tests
+        run: |
+          docker compose run --rm \
+            -e DATABASE_URL=postgresql://adipa:adipa@db:5432/adipa_db \
+            -e UPLOAD_DIR=/tmp/uploads \
+            -e SECRET_KEY=ci-secret-key-only \
+            -e ADMIN_USERNAME=admin \
+            -e ADMIN_PASSWORD=adminpass123 \
+            test
+
+      - name: Teardown
+        if: always()
+        run: docker compose down -v

@@ -11,6 +11,15 @@ class MidiaType(str, enum.Enum):
     video = "video"
 
 
+class Admin(Base):
+    __tablename__ = "admins"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(100), unique=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    criado_em = Column(DateTime, default=datetime.utcnow)
+
+
 class Noticia(Base):
     __tablename__ = "noticias"
 

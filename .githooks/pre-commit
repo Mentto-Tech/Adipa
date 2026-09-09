@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -e
+
+echo "▶ Rodando testes antes do commit..."
+
+# Verifica se o docker compose está disponível
+if ! command -v docker &> /dev/null; then
+  echo "✗ Docker não encontrado. Instale o Docker para rodar os testes."
+  exit 1
+fi
+
+# Sobe o banco se não estiver rodando
+docker compose up -d db
+
+# Aguarda o Postgres ficar saudável
+echo "  Aguardando Postgres..."
+for i in $(seq 1 30); do
+  docker compose ps db 2>/dev/null | grep -q "healthy" && break
+  sleep 2
+done
+
+# Roda os testes
+docker compose run --rm \
+  -e DATABASE_URL=postgresql://adipa:adipa@db:5432/adipa_db \
+  -e UPLOAD_DIR=/tmp/uploads \
+  -e SECRET_KEY=local-test-secret \
+  -e ADMIN_USERNAME=admin \
+  -e ADMIN_PASSWORD=adminpass123 \
+  test
+
+STATUS=$?
+
+if [ $STATUS -ne 0 ]; then
+  echo ""
+  echo "✗ Testes falharam. Commit bloqueado."
+  echo "  Corrija os erros acima e tente novamente."
+  exit 1
+fi
+
+echo "✓ Todos os testes passaram."

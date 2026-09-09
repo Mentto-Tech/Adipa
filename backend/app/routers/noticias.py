@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Midia, MidiaType, Noticia
 from app.schemas import NoticiaListItem, NoticiaOut
+from app.security import get_current_admin
 
 router = APIRouter(prefix="/noticias", tags=["noticias"])
 
@@ -50,6 +51,7 @@ async def criar_noticia(
     fotos: Optional[List[UploadFile]] = File(default=None),
     videos: Optional[List[UploadFile]] = File(default=None),
     db: Session = Depends(get_db),
+    _admin: str = Depends(get_current_admin),
 ):
     # Valida capa
     if capa.content_type not in ALLOWED_IMAGE_TYPES:
@@ -113,8 +115,34 @@ def obter_noticia(slug: str, db: Session = Depends(get_db)):
     return noticia
 
 
+@router.put("/{id}", response_model=NoticiaOut)
+async def atualizar_noticia(
+    id: int,
+    titulo: str = Form(...),
+    texto: str = Form(...),
+    capa: Optional[UploadFile] = File(default=None),
+    db: Session = Depends(get_db),
+    _admin: str = Depends(get_current_admin),
+):
+    noticia = db.query(Noticia).filter(Noticia.id == id).first()
+    if not noticia:
+        raise HTTPException(status_code=404, detail="Notícia não encontrada")
+
+    noticia.titulo = titulo
+    noticia.texto = texto
+
+    if capa and capa.filename:
+        if capa.content_type not in ALLOWED_IMAGE_TYPES:
+            raise HTTPException(status_code=400, detail="Capa deve ser uma imagem.")
+        noticia.capa = save_upload(capa, "capas")
+
+    db.commit()
+    db.refresh(noticia)
+    return noticia
+
+
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def deletar_noticia(id: int, db: Session = Depends(get_db)):
+def deletar_noticia(id: int, db: Session = Depends(get_db), _admin: str = Depends(get_current_admin)):
     noticia = db.query(Noticia).filter(Noticia.id == id).first()
     if not noticia:
         raise HTTPException(status_code=404, detail="Notícia não encontrada")
