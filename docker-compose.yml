@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: adipa
+      POSTGRES_PASSWORD: adipa
+      POSTGRES_DB: adipa_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U adipa -d adipa_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./adipa-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://adipa:adipa@db:5432/adipa_db
+      UPLOAD_DIR: /uploads
+    volumes:
+      - uploads:/uploads
+      - ./adipa-api:/app  # hot reload em dev
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ./adipa-site
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  uploads:

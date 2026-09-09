@@ -45,32 +45,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-.Python
-.venv/
-venv/
-env/
-*.egg-info/
-dist/
-*.egg
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-
-# ide
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# docker
-docker-compose.override.yml
-
-# logs
-*.log
-logs/

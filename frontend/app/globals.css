@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+button,
+a[style*="border-radius"] {
+  transition: transform 0.2s ease;
+}
+
+button:hover,
+a[style*="border-radius"]:hover {
+  transform: scale(1.05);
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #222;
+  background: #fff;
+}
