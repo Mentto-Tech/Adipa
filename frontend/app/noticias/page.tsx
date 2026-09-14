@@ -1,14 +1,12 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { apiListNoticias, type NoticiaListItem } from "@/lib/api";
 import "./page.css";
-
-export const metadata: Metadata = {
-  title: "Notícias – ADIPA",
-};
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("pt-BR", {
@@ -18,16 +16,17 @@ function formatDate(dateStr: string) {
   });
 }
 
-export default async function Noticias() {
-  let noticias: NoticiaListItem[] = [];
-  let error = "";
+export default function Noticias() {
+  const [noticias, setNoticias] = useState<NoticiaListItem[]>([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  try {
-    noticias = await apiListNoticias();
-  } catch (err) {
-    console.error("[noticias] erro ao buscar:", err);
-    error = "Não foi possível carregar as notícias. Tente novamente mais tarde.";
-  }
+  useEffect(() => {
+    apiListNoticias()
+      .then(setNoticias)
+      .catch(() => setError("Não foi possível carregar as notícias. Tente novamente mais tarde."))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <>
@@ -40,9 +39,15 @@ export default async function Noticias() {
         </div>
 
         <div className="noticias-grid">
-          {error && <p className="noticias-error">{error}</p>}
+          {loading && (
+            <p className="noticias-empty">Carregando...</p>
+          )}
 
-          {!error && noticias.length === 0 && (
+          {!loading && error && (
+            <p className="noticias-error">{error}</p>
+          )}
+
+          {!loading && !error && noticias.length === 0 && (
             <p className="noticias-empty">Nenhuma notícia publicada ainda.</p>
           )}
 
