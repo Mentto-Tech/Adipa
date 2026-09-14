@@ -49,7 +49,7 @@ export async function apiLogin(username: string, password: string) {
 }
 
 export async function apiListNoticias(): Promise<NoticiaListItem[]> {
-  const res = await fetch(`${BASE}/noticias/`);
+  const res = await fetch(`${BASE}/noticias/`, { cache: "no-store" });
   if (!res.ok) throw new Error("Erro ao buscar notícias");
   const data: NoticiaListItem[] = await res.json();
   return data.map(resolveNoticiaUrls);
