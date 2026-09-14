@@ -1,6 +1,4 @@
-import os
 import re
-import uuid
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
@@ -10,16 +8,15 @@ from app.database import get_db
 from app.models import Midia, MidiaType, Noticia
 from app.schemas import NoticiaListItem, NoticiaOut
 from app.security import get_current_admin
+from app.storage import delete_file, upload_file
 
 router = APIRouter(prefix="/noticias", tags=["noticias"])
 
-UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/uploads")
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
 ALLOWED_VIDEO_TYPES = {"video/mp4", "video/webm", "video/ogg"}
 
 
-def slugify(text: str) -> str:
-    text = text.lower().strip()
+def slugify(text: str) -> str:    text = text.lower().strip()
     text = re.sub(r"[àáâãäå]", "a", text)
     text = re.sub(r"[èéêë]", "e", text)
     text = re.sub(r"[ìíîï]", "i", text)
@@ -30,17 +27,6 @@ def slugify(text: str) -> str:
     text = re.sub(r"[^a-z0-9\s-]", "", text)
     text = re.sub(r"[\s]+", "-", text)
     return text
-
-
-def save_upload(file: UploadFile, subfolder: str) -> str:
-    dest_dir = os.path.join(UPLOAD_DIR, subfolder)
-    os.makedirs(dest_dir, exist_ok=True)
-    ext = os.path.splitext(file.filename or "file")[1]
-    filename = f"{uuid.uuid4().hex}{ext}"
-    dest_path = os.path.join(dest_dir, filename)
-    with open(dest_path, "wb") as f:
-        f.write(file.file.read())
-    return f"/{subfolder}/{filename}"
 
 
 @router.post("/", response_model=NoticiaOut, status_code=status.HTTP_201_CREATED)
@@ -61,7 +47,7 @@ async def criar_noticia(
         )
 
     # Salva capa
-    capa_url = save_upload(capa, "capas")
+    capa_url = upload_file(capa, "capas")
 
     # Gera slug único
     base_slug = slugify(titulo)
@@ -83,7 +69,7 @@ async def criar_noticia(
                     status_code=400,
                     detail=f"Foto inválida: {foto.filename} ({foto.content_type})",
                 )
-            url = save_upload(foto, "fotos")
+            url = upload_file(foto, "fotos")
             db.add(Midia(noticia_id=noticia.id, tipo=MidiaType.foto, url=url, ordem=ordem))
 
     # Processa vídeos
@@ -94,7 +80,7 @@ async def criar_noticia(
                     status_code=400,
                     detail=f"Vídeo inválido: {video.filename} ({video.content_type})",
                 )
-            url = save_upload(video, "videos")
+            url = upload_file(video, "videos")
             db.add(Midia(noticia_id=noticia.id, tipo=MidiaType.video, url=url, ordem=ordem))
 
     db.commit()
@@ -136,7 +122,8 @@ async def atualizar_noticia(
     if capa and capa.filename:
         if capa.content_type not in ALLOWED_IMAGE_TYPES:
             raise HTTPException(status_code=400, detail="Capa deve ser uma imagem.")
-        noticia.capa = save_upload(capa, "capas")
+        delete_file(noticia.capa)
+        noticia.capa = upload_file(capa, "capas")
 
     if remove_midias:
         ids_to_remove = [int(x) for x in remove_midias.split(",") if x.strip().isdigit()]
@@ -151,7 +138,7 @@ async def atualizar_noticia(
                     status_code=400,
                     detail=f"Foto inválida: {foto.filename} ({foto.content_type})",
                 )
-            url = save_upload(foto, "fotos")
+            url = upload_file(foto, "fotos")
             db.add(Midia(noticia_id=noticia.id, tipo=MidiaType.foto, url=url, ordem=existing_count + idx))
 
     db.commit()
@@ -164,5 +151,8 @@ def deletar_noticia(id: int, db: Session = Depends(get_db), _admin: str = Depend
     noticia = db.query(Noticia).filter(Noticia.id == id).first()
     if not noticia:
         raise HTTPException(status_code=404, detail="Notícia não encontrada")
+    delete_file(noticia.capa)
+    for midia in noticia.midias:
+        delete_file(midia.url)
     db.delete(noticia)
     db.commit()
