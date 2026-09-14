@@ -16,7 +16,8 @@ ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
 ALLOWED_VIDEO_TYPES = {"video/mp4", "video/webm", "video/ogg"}
 
 
-def slugify(text: str) -> str:    text = text.lower().strip()
+def slugify(text: str) -> str:
+    text = text.lower().strip()
     text = re.sub(r"[àáâãäå]", "a", text)
     text = re.sub(r"[èéêë]", "e", text)
     text = re.sub(r"[ìíîï]", "i", text)
@@ -39,17 +40,11 @@ async def criar_noticia(
     db: Session = Depends(get_db),
     _admin: str = Depends(get_current_admin),
 ):
-    # Valida capa
     if capa.content_type not in ALLOWED_IMAGE_TYPES:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Capa deve ser uma imagem. Recebido: {capa.content_type}",
-        )
+        raise HTTPException(status_code=400, detail=f"Capa deve ser uma imagem. Recebido: {capa.content_type}")
 
-    # Salva capa
     capa_url = upload_file(capa, "capas")
 
-    # Gera slug único
     base_slug = slugify(titulo)
     slug = base_slug
     counter = 1
@@ -59,27 +54,19 @@ async def criar_noticia(
 
     noticia = Noticia(titulo=titulo, texto=texto, capa=capa_url, slug=slug)
     db.add(noticia)
-    db.flush()  # obter o id antes de adicionar mídias
+    db.flush()
 
-    # Processa fotos
     if fotos:
         for ordem, foto in enumerate(fotos):
             if foto.content_type not in ALLOWED_IMAGE_TYPES:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Foto inválida: {foto.filename} ({foto.content_type})",
-                )
+                raise HTTPException(status_code=400, detail=f"Foto inválida: {foto.filename} ({foto.content_type})")
             url = upload_file(foto, "fotos")
             db.add(Midia(noticia_id=noticia.id, tipo=MidiaType.foto, url=url, ordem=ordem))
 
-    # Processa vídeos
     if videos:
         for ordem, video in enumerate(videos):
             if video.content_type not in ALLOWED_VIDEO_TYPES:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Vídeo inválido: {video.filename} ({video.content_type})",
-                )
+                raise HTTPException(status_code=400, detail=f"Vídeo inválido: {video.filename} ({video.content_type})")
             url = upload_file(video, "videos")
             db.add(Midia(noticia_id=noticia.id, tipo=MidiaType.video, url=url, ordem=ordem))
 
@@ -134,10 +121,7 @@ async def atualizar_noticia(
         existing_count = db.query(Midia).filter(Midia.noticia_id == id).count()
         for idx, foto in enumerate(fotos):
             if foto.content_type not in ALLOWED_IMAGE_TYPES:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Foto inválida: {foto.filename} ({foto.content_type})",
-                )
+                raise HTTPException(status_code=400, detail=f"Foto inválida: {foto.filename} ({foto.content_type})")
             url = upload_file(foto, "fotos")
             db.add(Midia(noticia_id=noticia.id, tipo=MidiaType.foto, url=url, ordem=existing_count + idx))
 

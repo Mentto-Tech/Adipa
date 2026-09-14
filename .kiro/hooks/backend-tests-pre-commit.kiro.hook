@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Backend Tests",
+  "description": "Roda os testes do backend antes de commitar",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "docker compose run --rm test"
+  }
+}

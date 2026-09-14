@@ -19,8 +19,8 @@ for i in $(seq 1 30); do
   sleep 2
 done
 
-# Roda os testes
-docker compose run --rm \
+# Roda os testes (-T desabilita TTY, necessário no Windows/mintty)
+docker compose run --rm -T \
   -e DATABASE_URL=postgresql://adipa:adipa@db:5432/adipa_db \
   -e UPLOAD_DIR=/tmp/uploads \
   -e SECRET_KEY=local-test-secret \
