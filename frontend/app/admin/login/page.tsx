@@ -145,7 +145,7 @@ export default function AdminLogin() {
               disabled={loading || lockout > 0}
               className="login-btn"
             >
-              {loading ? "Entrando…" : "Entrar"}
+              {loading ? "Entrar" : "Entrar"}
             </button>
           </div>
         </form>
