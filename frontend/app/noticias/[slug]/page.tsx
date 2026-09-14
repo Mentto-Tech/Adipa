@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { apiGetNoticia, type NoticiaOut } from "@/lib/api";
+import MidiaCarousel from "./MidiaCarousel";
 import "./page.css";
 
 function formatDate(dateStr: string) {
@@ -17,17 +18,29 @@ function formatDate(dateStr: string) {
   });
 }
 
-export default function NoticiaDetalhe() {
+function textToHtml(text: string): string {
+  const escaped = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  return escaped
+    .split(/\n\n+/)
+    .filter((p) => p.trim())
+    .map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
+
+export default function NoticiaPage() {
   const { slug } = useParams<{ slug: string }>();
   const [noticia, setNoticia] = useState<NoticiaOut | null>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!slug) return;
     apiGetNoticia(slug)
       .then(setNoticia)
-      .catch(() => setError("Notícia não encontrada."))
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [slug]);
 
@@ -35,39 +48,46 @@ export default function NoticiaDetalhe() {
     <>
       <Navbar />
 
-      <main className="noticia-detalhe">
-        {loading && <p className="noticia-loading">Carregando...</p>}
+      <main className="noticia-detail">
+        {loading && <p style={{ textAlign: "center", padding: "80px", color: "#888" }}>Carregando...</p>}
 
-        {!loading && error && <p className="noticia-error-msg">{error}</p>}
+        {!loading && error && (
+          <p style={{ textAlign: "center", padding: "80px", color: "#c0392b" }}>Notícia não encontrada.</p>
+        )}
 
         {!loading && noticia && (
-          <>
-            {noticia.capa && (
-              <div className="noticia-hero">
-                <Image
-                  src={noticia.capa}
-                  alt={noticia.titulo}
-                  fill
-                  className="noticia-hero-img"
-                  priority
+          <div className="noticia-detail-container">
+            <Link href="/noticias" className="noticia-back-link">
+              ← Voltar para Notícias
+            </Link>
+
+            <article className="noticia-article">
+              <h1 className="noticia-title">{noticia.titulo}</h1>
+
+              <div className="noticia-body">
+                {noticia.capa && (
+                  <div className="noticia-cover-float">
+                    <Image
+                      src={noticia.capa}
+                      alt={noticia.titulo}
+                      width={600}
+                      height={400}
+                      className="noticia-cover-img"
+                      priority
+                    />
+                  </div>
+                )}
+                <div
+                  className="noticia-content"
+                  dangerouslySetInnerHTML={{ __html: textToHtml(noticia.texto) }}
                 />
-                <div className="noticia-hero-overlay" />
               </div>
-            )}
 
-            <div className="noticia-content">
-              <Link href="/noticias" className="noticia-voltar">
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <polyline points="15 18 9 12 15 6" />
-                </svg>
-                Voltar
-              </Link>
-
-              <p className="noticia-meta">{formatDate(noticia.criado_em)}</p>
-              <h1 className="noticia-titulo">{noticia.titulo}</h1>
-              <p className="noticia-texto">{noticia.texto}</p>
-            </div>
-          </>
+              {noticia.midias && noticia.midias.length > 0 && (
+                <MidiaCarousel midias={[...noticia.midias].sort((a, b) => a.ordem - b.ordem)} />
+              )}
+            </article>
+          </div>
         )}
       </main>
 
