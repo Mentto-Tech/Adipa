@@ -1,5 +1,5 @@
 services:
-  db-adipa:
+  db:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
@@ -16,7 +16,7 @@ services:
       timeout: 5s
       retries: 5
 
-  api-adipa:
+  api:
     build:
       context: ./backend
     restart: unless-stopped
