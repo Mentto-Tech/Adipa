@@ -45,6 +45,7 @@ def db_session(setup_db):
 def client(db_session):
     """TestClient com banco isolado via dependency override."""
     from main import app  # importa após setup do engine
+    from app.routers.auth import _attempts
 
     def override_get_db():
         try:
@@ -53,6 +54,7 @@ def client(db_session):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
+    _attempts.clear()  # reseta rate limit entre testes
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
