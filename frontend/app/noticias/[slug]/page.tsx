@@ -1,11 +1,12 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
-import { apiGetNoticia } from "@/lib/api";
-import { notFound } from "next/navigation";
-import type { Metadata } from "next";
-import MidiaCarousel from "./MidiaCarousel";
+import { apiGetNoticia, type NoticiaOut } from "@/lib/api";
 import "./page.css";
 
 function formatDate(dateStr: string) {
@@ -16,77 +17,58 @@ function formatDate(dateStr: string) {
   });
 }
 
-function textToHtml(text: string): string {
-  const escaped = text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-  return escaped
-    .split(/\n\n+/)
-    .filter((p) => p.trim())
-    .map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`)
-    .join("");
-}
+export default function NoticiaDetalhe() {
+  const { slug } = useParams<{ slug: string }>();
+  const [noticia, setNoticia] = useState<NoticiaOut | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
-  try {
-    const noticia = await apiGetNoticia(slug);
-    return { title: `${noticia.titulo} – ADIPA` };
-  } catch {
-    return { title: "Notícia – ADIPA" };
-  }
-}
-
-export default async function NoticiaPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  let noticia;
-
-  try {
-    noticia = await apiGetNoticia(slug);
-  } catch {
-    notFound();
-  }
-
-  const midias = noticia.midias?.sort((a, b) => a.ordem - b.ordem) ?? [];
+  useEffect(() => {
+    if (!slug) return;
+    apiGetNoticia(slug)
+      .then(setNoticia)
+      .catch(() => setError("Notícia não encontrada."))
+      .finally(() => setLoading(false));
+  }, [slug]);
 
   return (
     <>
       <Navbar />
 
-      <main className="noticia-detail">
-        <div className="noticia-detail-container">
-          <Link href="/noticias" className="noticia-back-link">
-            ← Voltar para Notícias
-          </Link>
+      <main className="noticia-detalhe">
+        {loading && <p className="noticia-loading">Carregando...</p>}
 
-          <article className="noticia-article">
-            <h1 className="noticia-title">{noticia.titulo}</h1>
+        {!loading && error && <p className="noticia-error-msg">{error}</p>}
 
-            <div className="noticia-body">
-              {noticia.capa && (
-                <div className="noticia-cover-float">
-                  <Image
-                    src={noticia.capa}
-                    alt={noticia.titulo}
-                    width={600}
-                    height={400}
-                    className="noticia-cover-img"
-                    priority
-                  />
-                </div>
-              )}
-              <div
-                className="noticia-content"
-                dangerouslySetInnerHTML={{ __html: textToHtml(noticia.texto) }}
-              />
-            </div>
-
-            {midias.length > 0 && (
-              <MidiaCarousel midias={midias} />
+        {!loading && noticia && (
+          <>
+            {noticia.capa && (
+              <div className="noticia-hero">
+                <Image
+                  src={noticia.capa}
+                  alt={noticia.titulo}
+                  fill
+                  className="noticia-hero-img"
+                  priority
+                />
+                <div className="noticia-hero-overlay" />
+              </div>
             )}
-          </article>
-        </div>
+
+            <div className="noticia-content">
+              <Link href="/noticias" className="noticia-voltar">
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                Voltar
+              </Link>
+
+              <p className="noticia-meta">{formatDate(noticia.criado_em)}</p>
+              <h1 className="noticia-titulo">{noticia.titulo}</h1>
+              <p className="noticia-texto">{noticia.texto}</p>
+            </div>
+          </>
+        )}
       </main>
 
       <Footer />
