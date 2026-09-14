@@ -1,7 +1,7 @@
 .noticias-page {
   min-height: 100vh;
   background: #f5f5f5;
-  padding: 64px 32px;
+  padding: 32px;
 }
 
 .noticias-header {
@@ -30,57 +30,88 @@
 }
 
 .noticia-card {
-  background: #fff;
-  border-radius: 12px;
+  position: relative;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   text-decoration: none;
   display: flex;
   flex-direction: column;
+  aspect-ratio: 4 / 5;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .noticia-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .noticia-card-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   object-fit: cover;
 }
 
 .noticia-card-img-placeholder {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #e0eeec;
+  height: 100%;
+  background: #255753;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #255753;
+  color: #fff;
   font-size: 13px;
 }
 
-.noticia-card-body {
-  padding: 18px 20px 22px;
+.noticia-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(25, 60, 55, 0.92) 0%,
+    rgba(25, 60, 55, 0.7) 40%,
+    rgba(25, 60, 55, 0.1) 70%,
+    transparent 100%
+  );
   display: flex;
   flex-direction: column;
-  flex: 1;
+  justify-content: flex-end;
+  padding: 28px 24px;
 }
 
 .noticia-card-date {
   font-size: 12px;
-  color: #888;
+  color: rgba(255, 255, 255, 0.7);
   margin-bottom: 8px;
 }
 
 .noticia-card-title {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
-  color: #222;
+  color: #fff;
   line-height: 1.4;
-  flex: 1;
+  margin: 0 0 18px;
+}
+
+.noticia-card-btn {
+  display: inline-block;
+  width: fit-content;
+  padding: 8px 20px;
+  border: 1.5px solid #fff;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.noticia-card:hover .noticia-card-btn {
+  background: #fff;
+  color: #193c37;
 }
 
 .noticias-empty {
@@ -112,5 +143,6 @@
 
   .noticias-grid {
     grid-template-columns: 1fr;
+    max-width: 400px;
   }
 }

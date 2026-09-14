@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { apiListNoticias } from "@/lib/api";
+import { apiListNoticias, type NoticiaListItem } from "@/lib/api";
 import "./page.css";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ function formatDate(dateStr: string) {
 }
 
 export default async function Noticias() {
-  let noticias = [];
+  let noticias: NoticiaListItem[] = [];
   let error = "";
 
   try {
@@ -52,15 +52,16 @@ export default async function Noticias() {
                   src={noticia.capa}
                   alt={noticia.titulo}
                   width={600}
-                  height={338}
+                  height={750}
                   className="noticia-card-img"
                 />
               ) : (
                 <div className="noticia-card-img-placeholder">Sem imagem</div>
               )}
-              <div className="noticia-card-body">
+              <div className="noticia-card-overlay">
                 <span className="noticia-card-date">{formatDate(noticia.criado_em)}</span>
                 <h2 className="noticia-card-title">{noticia.titulo}</h2>
+                <span className="noticia-card-btn">SAIBA MAIS</span>
               </div>
             </Link>
           ))}

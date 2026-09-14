@@ -121,6 +121,8 @@ async def atualizar_noticia(
     titulo: str = Form(...),
     texto: str = Form(...),
     capa: Optional[UploadFile] = File(default=None),
+    fotos: Optional[List[UploadFile]] = File(default=None),
+    remove_midias: Optional[str] = Form(default=None),
     db: Session = Depends(get_db),
     _admin: str = Depends(get_current_admin),
 ):
@@ -135,6 +137,22 @@ async def atualizar_noticia(
         if capa.content_type not in ALLOWED_IMAGE_TYPES:
             raise HTTPException(status_code=400, detail="Capa deve ser uma imagem.")
         noticia.capa = save_upload(capa, "capas")
+
+    if remove_midias:
+        ids_to_remove = [int(x) for x in remove_midias.split(",") if x.strip().isdigit()]
+        if ids_to_remove:
+            db.query(Midia).filter(Midia.id.in_(ids_to_remove), Midia.noticia_id == id).delete(synchronize_session="fetch")
+
+    if fotos:
+        existing_count = db.query(Midia).filter(Midia.noticia_id == id).count()
+        for idx, foto in enumerate(fotos):
+            if foto.content_type not in ALLOWED_IMAGE_TYPES:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Foto inválida: {foto.filename} ({foto.content_type})",
+                )
+            url = save_upload(foto, "fotos")
+            db.add(Midia(noticia_id=noticia.id, tipo=MidiaType.foto, url=url, ordem=existing_count + idx))
 
     db.commit()
     db.refresh(noticia)

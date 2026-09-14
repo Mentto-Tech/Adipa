@@ -1,6 +1,16 @@
 import { authHeaders } from "./auth";
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const isServer = typeof window === "undefined";
+const BASE = isServer
+  ? (process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000")
+  : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000");
+
+function resolveMediaUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  const path = url.startsWith("/") ? url : `/${url}`;
+  return `/uploads${path}`;
+}
 
 export interface NoticiaListItem {
   id: number;
@@ -14,6 +24,15 @@ export interface NoticiaOut extends NoticiaListItem {
   texto: string;
   atualizado_em: string;
   midias: { id: number; tipo: string; url: string; ordem: number }[];
+}
+
+function resolveNoticiaUrls<T extends NoticiaListItem>(noticia: T): T {
+  const base = { ...noticia, capa: resolveMediaUrl(noticia.capa) };
+  if ("midias" in noticia) {
+    const out = noticia as unknown as NoticiaOut;
+    return { ...base, midias: out.midias.map((m) => ({ ...m, url: resolveMediaUrl(m.url) })) } as T;
+  }
+  return base as T;
 }
 
 export async function apiLogin(username: string, password: string) {
@@ -32,13 +51,15 @@ export async function apiLogin(username: string, password: string) {
 export async function apiListNoticias(): Promise<NoticiaListItem[]> {
   const res = await fetch(`${BASE}/noticias/`);
   if (!res.ok) throw new Error("Erro ao buscar notícias");
-  return res.json();
+  const data: NoticiaListItem[] = await res.json();
+  return data.map(resolveNoticiaUrls);
 }
 
 export async function apiGetNoticia(slug: string): Promise<NoticiaOut> {
   const res = await fetch(`${BASE}/noticias/${slug}`);
   if (!res.ok) throw new Error("Notícia não encontrada");
-  return res.json();
+  const data: NoticiaOut = await res.json();
+  return resolveNoticiaUrls(data);
 }
 
 export async function apiCreateNoticia(form: FormData): Promise<NoticiaOut> {
@@ -73,4 +94,17 @@ export async function apiDeleteNoticia(id: number): Promise<void> {
     headers: authHeaders(),
   });
   if (!res.ok) throw new Error("Erro ao deletar notícia");
+}
+
+export async function apiDeleteMidia(noticiaId: number, midiaId: number): Promise<void> {
+  const fd = new FormData();
+  fd.append("titulo", "");
+  fd.append("texto", "");
+  fd.append("remove_midias", String(midiaId));
+  const res = await fetch(`${BASE}/noticias/${noticiaId}`, {
+    method: "PUT",
+    headers: authHeaders(),
+    body: fd,
+  });
+  if (!res.ok) throw new Error("Erro ao remover mídia");
 }

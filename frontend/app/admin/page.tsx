@@ -11,10 +11,9 @@ import {
 } from "@/lib/api";
 import "./admin.css";
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 type Mode = "list" | "create" | "edit";
-interface FormState { titulo: string; texto: string; capa: File | null; }
-const emptyForm: FormState = { titulo: "", texto: "", capa: null };
+interface FormState { titulo: string; texto: string; capa: File | null; fotos: File[]; }
+const emptyForm: FormState = { titulo: "", texto: "", capa: null, fotos: [] };
 
 export default function AdminPage() {
   const router = useRouter();
@@ -27,6 +26,8 @@ export default function AdminPage() {
   const [feedback, setFeedback] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [existingMidias, setExistingMidias] = useState<{ id: number; url: string; tipo: string }[]>([]);
+  const [removeMidias, setRemoveMidias] = useState<number[]>([]);
 
   useEffect(() => {
     if (!getToken()) router.replace("/admin/login");
@@ -55,7 +56,9 @@ export default function AdminPage() {
 
   function startCreate() {
     setForm(emptyForm); setEditTarget(null);
-    setFeedback(null); setPreviewUrl(null); setMode("create");
+    setFeedback(null); setPreviewUrl(null);
+    setExistingMidias([]); setRemoveMidias([]);
+    setMode("create");
   }
 
   async function startEdit(item: NoticiaListItem) {
@@ -63,7 +66,9 @@ export default function AdminPage() {
     try {
       const full = await apiGetNoticia(item.slug);
       setEditTarget(full);
-      setForm({ titulo: full.titulo, texto: full.texto, capa: null });
+      setForm({ titulo: full.titulo, texto: full.texto, capa: null, fotos: [] });
+      setExistingMidias(full.midias.filter((m) => m.tipo === "foto"));
+      setRemoveMidias([]);
       setPreviewUrl(null);
       setMode("edit");
     } catch { setFeedback({ type: "err", msg: "Erro ao carregar notícia." }); }
@@ -82,6 +87,12 @@ export default function AdminPage() {
     fd.append("titulo", form.titulo.trim());
     fd.append("texto", form.texto.trim());
     if (form.capa) fd.append("capa", form.capa);
+    for (const foto of form.fotos) {
+      fd.append("fotos", foto);
+    }
+    if (mode === "edit" && removeMidias.length > 0) {
+      fd.append("remove_midias", removeMidias.join(","));
+    }
     try {
       if (mode === "create") await apiCreateNoticia(fd);
       else if (mode === "edit" && editTarget) await apiUpdateNoticia(editTarget.id, fd);
@@ -169,7 +180,7 @@ export default function AdminPage() {
                     {noticias.map((n) => (
                       <div key={n.id} className="news-card">
                         <div className="news-thumb">
-                          <Image src={`${BASE}/uploads${n.capa}`} alt={n.titulo} fill className="object-cover" sizes="72px" />
+                          <Image src={n.capa} alt={n.titulo} fill className="object-cover" sizes="72px" />
                         </div>
                         <div className="news-info">
                           <p className="news-title">{n.titulo}</p>
@@ -238,7 +249,7 @@ export default function AdminPage() {
                         <span className="capa-label">{previewUrl ? "Nova capa" : "Capa atual"}</span>
                         <div className="capa-preview">
                           <Image
-                            src={previewUrl ?? `${BASE}/uploads${editTarget!.capa}`}
+                            src={previewUrl ?? editTarget!.capa}
                             alt="Preview" fill style={{ objectFit: "cover" }} sizes="280px" />
                         </div>
                       </div>
@@ -256,6 +267,65 @@ export default function AdminPage() {
                       </p>
                       <p className="file-hint">JPG, PNG, WEBP ou GIF</p>
                     </label>
+                  </div>
+
+                  <div className="field">
+                    <label>Imagens do carrossel (até 10, opcional)</label>
+
+                    {mode === "edit" && existingMidias.length > 0 && (
+                      <div className="midia-grid">
+                        {existingMidias.map((m) => (
+                          <div key={m.id} className="midia-thumb">
+                            <Image src={m.url} alt="Mídia" fill className="object-cover" sizes="80px" />
+                            <button
+                              type="button"
+                              className="midia-remove"
+                              onClick={() => {
+                                setExistingMidias((prev) => prev.filter((x) => x.id !== m.id));
+                                setRemoveMidias((prev) => [...prev, m.id]);
+                              }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {form.fotos.length > 0 && (
+                      <div className="midia-grid">
+                        {form.fotos.map((f, i) => (
+                          <div key={i} className="midia-thumb">
+                            <Image src={URL.createObjectURL(f)} alt={f.name} fill className="object-cover" sizes="80px" />
+                            <button
+                              type="button"
+                              className="midia-remove"
+                              onClick={() => setForm((prev) => ({ ...prev, fotos: prev.fotos.filter((_, j) => j !== i) }))}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {(existingMidias.length + form.fotos.length) < 10 && (
+                      <label className="file-area file-area-sm">
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          multiple
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files ?? []);
+                            const remaining = 10 - existingMidias.length - form.fotos.length;
+                            setForm((f) => ({ ...f, fotos: [...f.fotos, ...files].slice(0, 10) }));
+                            e.target.value = "";
+                          }}
+                        />
+                        <p className="file-select-name">+ Adicionar imagens</p>
+                        <p className="file-hint">{10 - existingMidias.length - form.fotos.length} vaga(s) restante(s)</p>
+                      </label>
+                    )}
                   </div>
 
                   <div className="form-actions">
