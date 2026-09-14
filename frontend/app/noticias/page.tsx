@@ -24,7 +24,8 @@ export default async function Noticias() {
 
   try {
     noticias = await apiListNoticias();
-  } catch {
+  } catch (err) {
+    console.error("[noticias] erro ao buscar:", err);
     error = "Não foi possível carregar as notícias. Tente novamente mais tarde.";
   }
 
