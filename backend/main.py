@@ -6,6 +6,7 @@ import os
 from app.database import Base, engine, SessionLocal
 from app.routers import noticias
 from app.routers.auth import router as auth_router, seed_admin
+from app.routers.associados import router as associados_router
 
 # Cria tabelas
 Base.metadata.create_all(bind=engine)
@@ -39,6 +40,7 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 app.include_router(auth_router)
 app.include_router(noticias.router)
+app.include_router(associados_router)
 
 
 @app.get("/")

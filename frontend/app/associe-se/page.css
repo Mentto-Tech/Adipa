@@ -295,3 +295,21 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── FORM FEEDBACK ── */
+.as-form-feedback {
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.as-form-success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.as-form-error {
+  background: #fee2e2;
+  color: #991b1b;
+}

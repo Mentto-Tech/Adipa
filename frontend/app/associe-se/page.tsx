@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import type { Metadata } from "next";
+import AssocieSeForm from "./AssocieSeForm";
 import "./page.css";
 
 export const metadata: Metadata = {
@@ -117,69 +118,7 @@ export default function AssocieSe() {
             PREENCHA O FORMULÁRIO ABAIXO PARA SE TORNAR UM ASSOCIADO ADIPA
           </h2>
 
-          <form className="as-form">
-            <div className="as-form-row-2">
-              <Field label="Razão Social *" name="razaoSocial" />
-              <Field label="Nome Fantasia *" name="nomeFantasia" />
-            </div>
-            <div className="as-form-row-3">
-              <Field label="Data de fundação *" name="dataFundacao" type="date" />
-              <Field label="CNPJ *" name="cnpj" />
-              <Field label="Logradouro *" name="logradouro" />
-            </div>
-            <div className="as-form-row-2">
-              <Field label="Número *" name="numero" />
-              <Field label="Bairro *" name="bairro" />
-            </div>
-            <div className="as-form-row-4">
-              <Field label="Cidade *" name="cidade" />
-              <Field label="Estado *" name="estado" />
-              <Field label="CEP *" name="cep" />
-              <Field label="Número de colaboradores *" name="colaboradores" type="number" />
-            </div>
-            <div className="as-form-row-2">
-              <Field label="E-mail setor financeiro *" name="emailFinanceiro" type="email" />
-              <Field label="Telefone setor financeiro *" name="telefoneFinanceiro" type="tel" />
-            </div>
-            <div className="as-form-row-2">
-              <Field label="Nome do representante completo *" name="nomeRepresentante" />
-              <Field label="CPF (usado para lista de presença em assembleias) *" name="cpf" />
-            </div>
-            <div className="as-form-row-2">
-              <Field label="RG *" name="rg" />
-              <Field label="Data de nascimento *" name="dataNascimento" type="date" />
-            </div>
-
-            <div>
-              <label className="as-requerimento-label">Requerimento *</label>
-              <div className="as-requerimento-box">
-                <p>
-                  Através do presente formulário, solicito minha admissão como associado(a) da Associação para o Desenvolvimento da Indústria de Produção de Alimentos - ADIPA na forma de seu Estatuto, cujo teor foi por mim lido e compreendido, comprometendo-me, desde o deferimento do presente pedido, a agir de acordo com seus dispositivos.
-                </p>
-                <p>Por ser verdade, ratifico todas as declarações por mim prestadas neste requerimento, declarando ainda:</p>
-                <p><strong>a.</strong> Ciência de que o envio do presente Termo de Requerimento de Adesão ao quadro de associados da ADIPA não obriga esta entidade a promover o referido vínculo, que se encontrará dependente de análise ao atendimento dos requisitos contidos no Estatuto e/ou Regimento Interno, dentre tais a idoneidade do requerente, o segmento de atuação e a pertinência do vínculo pretendido.</p>
-                <p><strong>b.</strong> Que o faço com precisão, de tal forma que todas as informações prestadas refletem a mais pura verdade, respondendo por eventuais desdobramentos ocasionados em razão da incorreção dos dados lançados.</p>
-                <p><strong>c.</strong> Ciência e concordância com o disposto no Estatuto e/ou Regimento Interno da ADIPA, bem como de que o vínculo associativo se inicia a partir de sua aprovação pela Presidência Executiva e do pagamento da contribuição mensal de associado(a), definida pelo número de funcionários da empresa.</p>
-              </div>
-            </div>
-
-            <div>
-              <label className="as-terms-label">Termos e Políticas: *</label>
-              <div className="as-terms-row">
-                <input type="checkbox" id="termos" name="termos" required className="as-terms-checkbox" />
-                <label htmlFor="termos" className="as-terms-text">
-                  Declaro que li e aceito os{" "}
-                  <a href="https://mentto.com.br/termos-de-uso-e-politicas-de-privacidade/" target="_blank" rel="noopener noreferrer" className="as-terms-link">
-                    termos e políticas
-                  </a>
-                </label>
-              </div>
-            </div>
-
-            <div className="as-form-submit">
-              <button type="submit" className="btn-submit">ENVIAR</button>
-            </div>
-          </form>
+          <AssocieSeForm />
 
           <p className="as-form-note">*Boletos com data de vencimento todo dia 10</p>
         </div>
@@ -190,17 +129,3 @@ export default function AssocieSe() {
   );
 }
 
-function Field({ label, name, type = "text" }: { label: string; name: string; type?: string }) {
-  return (
-    <div className="as-field">
-      <label htmlFor={name} className="as-field-label">{label}</label>
-      <input
-        id={name}
-        name={name}
-        type={type}
-        required
-        className="as-field-input"
-      />
-    </div>
-  );
-}
