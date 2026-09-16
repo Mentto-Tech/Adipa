@@ -1,7 +1,7 @@
 import os
 import httpx
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/associados", tags=["associados"])
 
@@ -18,7 +18,7 @@ class AssociadoRequest(BaseModel):
     estado: str
     cep: str
     colaboradores: str
-    emailFinanceiro: EmailStr
+    emailFinanceiro: str
     telefoneFinanceiro: str
     nomeRepresentante: str
     cpf: str
