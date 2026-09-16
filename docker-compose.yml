@@ -31,6 +31,8 @@ services:
       AWS_REGION: ${AWS_REGION:-us-east-1}
       S3_BUCKET: ${S3_BUCKET:-}
       S3_BASE_URL: ${S3_BASE_URL:-}
+      MAILERLITE_API_KEY: ${MAILERLITE_API_KEY:-}
+      MAILERLITE_GROUP_ID: ${MAILERLITE_GROUP_ID:-}
     volumes:
       - uploads:/uploads
       - ./backend:/app
